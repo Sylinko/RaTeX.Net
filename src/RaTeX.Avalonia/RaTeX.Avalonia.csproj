@@ -4,6 +4,8 @@
     <PackageId>RaTeX.Avalonia</PackageId>
     <AssemblyName>RaTeX.Avalonia</AssemblyName>
     <Description>Avalonia rendering for managed RaTeX display lists.</Description>
+    <PackageDescription>Render LaTeX math in Avalonia with RaTeX, including a formula control, reusable drawing resources, bundled math fonts, and system font fallback.</PackageDescription>
+    <PackageTags>$(PackageTags);avalonia</PackageTags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
   </PropertyGroup>
@@ -13,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../RaTeX.Net/RaTeX.Net.csproj" />
+    <ProjectReference Include="../RaTeX/RaTeX.csproj" />
   </ItemGroup>
 
   <ItemGroup>

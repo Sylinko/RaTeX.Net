@@ -80,6 +80,6 @@ rustup target add "$target" --toolchain "$toolchain"
 
 bash "$script_dir/update-linux-notices.sh" "$rid"
 
-destination="$root/src/RaTeX.Net/runtimes/$rid/native"
+destination="$root/src/RaTeX/runtimes/$rid/native"
 mkdir -p "$destination"
 cp "$upstream/target/$target/release/$library" "$destination/$library"

@@ -5,6 +5,7 @@
     <AssemblyName>RaTeX</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>Bindings to the RaTeX C ABI with immutable managed display lists.</Description>
+    <PackageDescription>Unofficial .NET bindings for the RaTeX (LaTeX math layout engine), providing immutable display lists and native libraries for Windows, macOS, and Linux.</PackageDescription>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
     <RootNamespace>RaTeX</RootNamespace>
@@ -20,7 +21,7 @@
   </Target>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="RaTeX.Net.Tests" />
+    <InternalsVisibleTo Include="RaTeX.Tests" />
   </ItemGroup>
 
   <ItemGroup>

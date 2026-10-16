@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace RaTeX.Net.Tests;
+namespace RaTeX.Tests;
 
 public class DeploymentTests
 {

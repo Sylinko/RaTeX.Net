@@ -41,12 +41,12 @@ Then build, test, or pack the managed projects:
 ```sh
 dotnet build -c Release
 dotnet test -c Release
-dotnet pack src/RaTeX.Net -c Release -o artifacts/packages
+dotnet pack src/RaTeX -c Release -o artifacts/packages
 dotnet pack src/RaTeX.Avalonia -c Release -o artifacts/packages
 dotnet run --project samples/RaTeX.Avalonia.Demo -c Release -f net10.0
 ```
 
-The native scripts read `build/native.json`, install the selected Rust target, and place its library under `src/RaTeX.Net/runtimes/{rid}/native/`:
+The native scripts read `build/native.json`, install the selected Rust target, and place its library under `src/RaTeX/runtimes/{rid}/native/`:
 
 | RID         | Native library    |
 |-------------|-------------------|

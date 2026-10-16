@@ -77,7 +77,7 @@ jobs:
         with:
           name: native-${{ matrix.rid }}
           path: |
-            src/RaTeX.Net/runtimes/${{ matrix.rid }}/native/${{ matrix.library }}
+            src/RaTeX/runtimes/${{ matrix.rid }}/native/${{ matrix.library }}
             licenses/THIRD_PARTY_NOTICES.${{ matrix.rid }}.txt
           if-no-files-found: error
 
@@ -108,7 +108,7 @@ jobs:
           $config = Get-Content build/native.json -Raw | ConvertFrom-Json
           foreach ($target in $config.targets.PSObject.Properties) {
             $rid = $target.Name
-            $library = "src/RaTeX.Net/runtimes/$rid/native/$($target.Value.library)"
+            $library = "src/RaTeX/runtimes/$rid/native/$($target.Value.library)"
             $notice = "licenses/THIRD_PARTY_NOTICES.$rid.txt"
             foreach ($path in @($library, $notice)) {
               if (!(Test-Path -LiteralPath $path -PathType Leaf)) {
@@ -185,7 +185,7 @@ jobs:
 
       - name: Pack RaTeX with all native libraries
         run: >-
-          dotnet pack src/RaTeX.Net/RaTeX.Net.csproj -c Release --no-build --no-restore -o artifacts/packages
+          dotnet pack src/RaTeX/RaTeX.csproj -c Release --no-build --no-restore -o artifacts/packages
           "-p:CustomBeforeMicrosoftCommonTargets=$env:RELEASE_PROPS"
           "-p:CustomBeforeMicrosoftCommonCrossTargetingTargets=$env:RELEASE_PROPS"
 

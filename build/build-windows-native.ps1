@@ -34,7 +34,7 @@ try {
     cargo "+$($config.toolchain)" build --locked --release -p ratex-ffi --target $nativeTarget.target --target-dir (Join-Path $upstream 'target')
     if ($LASTEXITCODE) { throw 'Native build failed.' }
     & (Join-Path $PSScriptRoot 'update-windows-notices.ps1')
-    $target = Join-Path $root "src/RaTeX.Net/runtimes/$RuntimeIdentifier/native"
+    $target = Join-Path $root "src/RaTeX/runtimes/$RuntimeIdentifier/native"
     New-Item -ItemType Directory -Force -Path $target | Out-Null
     Copy-Item -LiteralPath "target/$($nativeTarget.target)/release/$($nativeTarget.library)" -Destination $target
     Get-FileHash (Join-Path $target $nativeTarget.library) -Algorithm SHA256

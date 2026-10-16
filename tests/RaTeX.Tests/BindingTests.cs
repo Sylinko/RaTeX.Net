@@ -3,7 +3,7 @@ using System.Text;
 using RaTeX.Interop;
 using RaTeX.Serialization;
 
-namespace RaTeX.Net.Tests;
+namespace RaTeX.Tests;
 
 public class BindingTests
 {

@@ -23,10 +23,10 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/RaTeX.Avalonia/RaTeX.Avalonia.csproj" />
-    <Project Path="src/RaTeX.Net/RaTeX.Net.csproj" />
+    <Project Path="src/RaTeX/RaTeX.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/RaTeX.Avalonia.Tests/RaTeX.Avalonia.Tests.csproj" />
-    <Project Path="tests/RaTeX.Net.Tests/RaTeX.Net.Tests.csproj" />
+    <Project Path="tests/RaTeX.Tests/RaTeX.Tests.csproj" />
   </Folder>
 </Solution>

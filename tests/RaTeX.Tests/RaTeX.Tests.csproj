@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/RaTeX.Net/RaTeX.Net.csproj" />
+    <ProjectReference Include="../../src/RaTeX/RaTeX.csproj" />
   </ItemGroup>
 
   <ItemGroup>

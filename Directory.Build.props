@@ -11,7 +11,10 @@
   <PropertyGroup>
     <Version>0.1.0</Version>
     <Authors>Sylinko</Authors>
+    <Copyright>Copyright (c) 2026 Sylinko</Copyright>
     <RepositoryUrl>https://github.com/Sylinko/RaTeX.Net</RepositoryUrl>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <PackageTags>latex;tex;math;formula;typesetting;ratex</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
