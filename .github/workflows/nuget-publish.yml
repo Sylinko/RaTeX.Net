@@ -86,7 +86,7 @@ jobs:
     needs: native
     runs-on: windows-2022
     permissions:
-      contents: read
+      contents: write
       id-token: write
     defaults:
       run:
@@ -201,6 +201,28 @@ jobs:
           name: nuget-packages
           path: artifacts/packages/*.*nupkg
           if-no-files-found: error
+
+      - name: Upload packages to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          $packages = @(Get-ChildItem -LiteralPath artifacts/packages -Filter '*.nupkg' -File | Sort-Object Name)
+          if ($packages.Count -ne 2) {
+            throw 'Expected the RaTeX and RaTeX.Avalonia packages.'
+          }
+          $existing = @(gh release view $env:RELEASE_TAG --json assets --jq '.assets[].name')
+          if ($LASTEXITCODE) {
+            exit $LASTEXITCODE
+          }
+          $pending = @($packages | Where-Object { $_.Name -notin $existing } | ForEach-Object FullName)
+          if ($pending.Count) {
+            gh release upload $env:RELEASE_TAG @pending
+            if ($LASTEXITCODE) {
+              exit $LASTEXITCODE
+            }
+          }
 
       - name: NuGet login (OIDC)
         uses: NuGet/login@v1
