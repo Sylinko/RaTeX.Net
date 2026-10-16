@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -38,41 +37,10 @@ internal struct NativeResult
 }
 
 /// <summary>
-/// Binds the pinned C ABI and resolves its library only from application or package locations.
+/// Binds the pinned C ABI using the runtime's native asset resolution.
 /// </summary>
 internal static partial class NativeMethods
 {
-    static NativeMethods() => NativeLibrary.SetDllImportResolver(typeof(NativeMethods).Assembly, Resolve);
-
-    private static nint Resolve(string name, Assembly assembly, DllImportSearchPath? searchPath)
-    {
-        if (name != "ratex_ffi")
-        {
-            return 0;
-        }
-
-        if (!OperatingSystem.IsWindows() || RuntimeInformation.ProcessArchitecture != Architecture.X64)
-        {
-            throw new PlatformNotSupportedException("This package currently ships and validates only win-x64.");
-        }
-
-        // Only application/package locations; never download binaries or search PATH.
-        var directory = Path.GetDirectoryName(assembly.Location) ?? AppContext.BaseDirectory;
-        foreach (var path in new[]
-                 {
-                     Path.Combine(directory, "runtimes", "win-x64", "native", "ratex_ffi.dll"),
-                     Path.Combine(directory, "ratex_ffi.dll")
-                 })
-        {
-            if (File.Exists(path))
-            {
-                return NativeLibrary.Load(path);
-            }
-        }
-        throw new DllNotFoundException(
-            "Pinned ratex_ffi.dll was not found in the application's native assets. Restore RaTeX.Net or run build/build-native.ps1.");
-    }
-
     /// <summary>
     /// Parses NUL-terminated UTF-8 synchronously. Input and options are borrowed until the call returns.
     /// </summary>

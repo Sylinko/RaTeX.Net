@@ -21,3 +21,6 @@ csharp_preserve_single_line_statements = false
 
 [*.{csproj,props,targets,axaml,yml,yaml,json}]
 indent_size = 2
+
+[*.{sh,py}]
+end_of_line = lf

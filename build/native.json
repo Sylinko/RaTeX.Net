@@ -2,5 +2,18 @@
   "commit": "7d9f9a39218914bead8ffdf39b79028a01d12c22",
   "archiveSha256": "04A65D10BB4AE8129DB22639B8B7117D034CA26270C408B06011DC8B11C24653",
   "toolchain": "1.98.1",
-  "target": "x86_64-pc-windows-msvc"
+  "targets": {
+    "win-x64": {
+      "target": "x86_64-pc-windows-msvc",
+      "library": "ratex_ffi.dll"
+    },
+    "osx-arm64": {
+      "target": "aarch64-apple-darwin",
+      "library": "libratex_ffi.dylib"
+    },
+    "osx-x64": {
+      "target": "x86_64-apple-darwin",
+      "library": "libratex_ffi.dylib"
+    }
+  }
 }

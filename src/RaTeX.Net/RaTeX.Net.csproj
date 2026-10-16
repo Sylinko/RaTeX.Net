@@ -8,8 +8,13 @@
     <RootNamespace>RaTeX</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <RatexNativeRuntimeIdentifier Condition="'$(RatexNativeRuntimeIdentifier)' == '' and '$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</RatexNativeRuntimeIdentifier>
+    <RatexNativeRuntimeIdentifier Condition="'$(RatexNativeRuntimeIdentifier)' == ''">$(NETCoreSdkRuntimeIdentifier)</RatexNativeRuntimeIdentifier>
+  </PropertyGroup>
+
   <Target Name="RequireNativeAsset" BeforeTargets="GenerateNuspec">
-    <Error Condition="!Exists('runtimes/win-x64/native/ratex_ffi.dll')" Text="Run build/build-native.ps1 before packing." />
+    <Error Condition="'@(RatexNativeAsset)' == ''" Text="Run build/build-windows-native.ps1 or build/build-mac-native.sh before packing. Stage every required RID under runtimes/{rid}/native/." />
   </Target>
 
   <ItemGroup>
@@ -17,6 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="runtimes/**/*" Pack="true" PackagePath="runtimes/" CopyToOutputDirectory="PreserveNewest" />
+    <RatexNativeAsset Include="runtimes/*/native/*.dll;runtimes/*/native/*.dylib" />
+    <None Remove="runtimes/**/*" />
+    <None Include="@(RatexNativeAsset)" Pack="true" PackagePath="%(Identity)" />
+    <!-- Source projects copy the selected native asset beside the assembly; NuGet uses RID assets. -->
+    <None Update="runtimes/$(RatexNativeRuntimeIdentifier)/native/*"
+          TargetPath="%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

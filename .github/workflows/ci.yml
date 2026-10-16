@@ -1,0 +1,119 @@
+name: Build and pack
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    name: Native (${{ matrix.rid }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            runner: windows-2022
+            library: ratex_ffi.dll
+          - rid: osx-arm64
+            runner: macos-15
+            library: libratex_ffi.dylib
+          - rid: osx-x64
+            runner: macos-15-intel
+            library: libratex_ffi.dylib
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $config = Get-Content build/native.json -Raw | ConvertFrom-Json
+          rustup toolchain install $config.toolchain --profile minimal --component rust-docs
+
+      - name: Install Rust (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          toolchain="$(/usr/bin/plutil -extract toolchain raw -o - build/native.json)"
+          rustup toolchain install "$toolchain" --profile minimal --component rust-docs
+
+      - name: Build native library (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./build/build-windows-native.ps1
+
+      - name: Build native library (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: bash build/build-mac-native.sh "${{ matrix.rid }}"
+
+      - name: Upload native library and notices
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-${{ matrix.rid }}
+          path: |
+            src/RaTeX.Net/runtimes/${{ matrix.rid }}/native/${{ matrix.library }}
+            licenses/THIRD_PARTY_NOTICES.${{ matrix.rid }}.txt
+          if-no-files-found: error
+
+  pack:
+    name: Test and pack
+    needs: native
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Collect native libraries and notices
+        uses: actions/download-artifact@v8
+        with:
+          pattern: native-*
+          merge-multiple: true
+          path: .
+
+      - name: Require every configured RID
+        run: |
+          $config = Get-Content build/native.json -Raw | ConvertFrom-Json
+          foreach ($target in $config.targets.PSObject.Properties) {
+            $rid = $target.Name
+            $library = "src/RaTeX.Net/runtimes/$rid/native/$($target.Value.library)"
+            $notice = "licenses/THIRD_PARTY_NOTICES.$rid.txt"
+            foreach ($path in @($library, $notice)) {
+              if (!(Test-Path -LiteralPath $path -PathType Leaf)) {
+                throw "Missing artifact for ${rid}: $path"
+              }
+            }
+          }
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore RaTeX.slnx --locked-mode
+
+      - name: Build managed projects
+        run: dotnet build RaTeX.slnx -c Release --no-restore
+
+      - name: Test managed projects on Windows
+        run: dotnet test RaTeX.slnx -c Release --no-build --no-restore
+
+      - name: Pack RaTeX.Net with all native libraries
+        run: dotnet pack src/RaTeX.Net/RaTeX.Net.csproj -c Release --no-build --no-restore -o artifacts/packages
+
+      - name: Pack RaTeX.Avalonia
+        run: dotnet pack src/RaTeX.Avalonia/RaTeX.Avalonia.csproj -c Release --no-build --no-restore -o artifacts/packages
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: nuget-packages
+          path: artifacts/packages/*.nupkg
+          if-no-files-found: error

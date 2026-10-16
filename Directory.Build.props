@@ -20,7 +20,6 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="/" />
     <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="/" />
-    <None Include="$(MSBuildThisFileDirectory)THIRD_PARTY_NOTICES.txt" Pack="true" PackagePath="/" />
     <None Include="$(MSBuildThisFileDirectory)licenses/*" Link="licenses/%(Filename)%(Extension)" Pack="true" PackagePath="licenses/" />
   </ItemGroup>
 </Project>

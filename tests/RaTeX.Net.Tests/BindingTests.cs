@@ -8,7 +8,7 @@ namespace RaTeX.Net.Tests;
 public class BindingTests
 {
     [Fact]
-    public void NativeStructures_OnWinX64_MatchAbiLayout()
+    public unsafe void NativeStructures_On64BitPlatforms_MatchAbiLayout()
     {
         Assert.Equal(24, Marshal.SizeOf<NativeOptions>());
         Assert.Equal(8, Marshal.OffsetOf<NativeOptions>(nameof(NativeOptions.DisplayMode)).ToInt32());

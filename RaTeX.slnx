@@ -1,15 +1,17 @@
 <Solution>
   <Folder Name="/GitHub/">
+    <File Path=".github/workflows/ci.yml" />
     <File Path=".gitignore" />
     <File Path="README.md" />
   </Folder>
   <Folder Name="/Licenses/">
-    <File Path="build/update-notices.ps1" />
+    <File Path="build/update-windows-notices.ps1" />
+    <File Path="build/update-mac-notices.sh" />
+    <File Path="build/generate-mac-notices.py" />
     <File Path="LICENSE" />
     <File Path="licenses/KaTeX-fonts-NOTICE.txt" />
     <File Path="licenses/RaTeX-MIT.txt" />
     <File Path="licenses/SIL-OFL-1.1.txt" />
-    <File Path="THIRD_PARTY_NOTICES.txt" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/RaTeX.Avalonia.Demo/RaTeX.Avalonia.Demo.csproj" />

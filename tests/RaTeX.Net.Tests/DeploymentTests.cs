@@ -14,12 +14,14 @@ public class DeploymentTests
         Directory.CreateDirectory(directory);
         var path = Path.Combine(directory, "RaTeX.Net.dll");
         File.Copy(typeof(Ratex).Assembly.Location, path);
+        var libraryName = OperatingSystem.IsMacOS() ? "libratex_ffi.dylib" : "ratex_ffi.dll";
+        var libraryPath = Path.Combine(directory, libraryName);
         if (corrupt)
         {
-            File.WriteAllText(Path.Combine(directory, "ratex_ffi.dll"), "not a native DLL");
+            File.WriteAllText(libraryPath, "not a native library");
         }
 
-        var context = new AssemblyLoadContext("isolated-deployment-" + Guid.NewGuid(), isCollectible: true);
+        var context = new IsolatedDeploymentContext(libraryPath);
         try
         {
             var assembly = context.LoadFromAssemblyPath(path);
@@ -37,6 +39,16 @@ public class DeploymentTests
         finally
         {
             context.Unload();
+        }
+    }
+
+    // Keep the test host's working native library out of these failure cases.
+    private sealed class IsolatedDeploymentContext(string libraryPath) : AssemblyLoadContext(isCollectible: true)
+    {
+        /// <inheritdoc />
+        protected override nint LoadUnmanagedDll(string unmanagedDllName)
+        {
+            return unmanagedDllName == "ratex_ffi" ? LoadUnmanagedDllFromPath(libraryPath) : 0;
         }
     }
 }

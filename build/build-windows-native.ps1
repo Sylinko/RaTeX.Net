@@ -1,7 +1,13 @@
+#Requires -Version 7.0
 $ErrorActionPreference = 'Stop'
-if (![System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) { throw 'Only win-x64 is currently packaged.' }
+if (!$IsWindows) {
+    throw 'Build Windows native assets on Windows.'
+}
+
+$RuntimeIdentifier = 'win-x64'
 $root = Split-Path $PSScriptRoot -Parent
 $config = Get-Content (Join-Path $PSScriptRoot 'native.json') -Raw | ConvertFrom-Json
+$nativeTarget = $config.targets.$RuntimeIdentifier
 $commit = $config.commit
 $archiveHash = $config.archiveSha256
 $cache = Join-Path $root 'artifacts/upstream'
@@ -15,6 +21,8 @@ if (!(Test-Path -LiteralPath $upstream)) {
     if ($LASTEXITCODE) { throw 'Upstream extraction failed.' }
 }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Cargo.lock') -Destination (Join-Path $upstream 'Cargo.lock')
+rustup target add $nativeTarget.target --toolchain $config.toolchain
+if ($LASTEXITCODE) { throw 'Rust target installation failed.' }
 $savedFlags = $env:RUSTFLAGS
 $savedEncoded = $env:CARGO_ENCODED_RUSTFLAGS
 $savedWrapper = $env:RUSTC_WRAPPER
@@ -23,13 +31,13 @@ try {
     $env:RUSTFLAGS = ''
     $env:CARGO_ENCODED_RUSTFLAGS = ''
     $env:RUSTC_WRAPPER = ''
-    cargo "+$($config.toolchain)" build --locked --release -p ratex-ffi --target $config.target --target-dir (Join-Path $upstream 'target')
+    cargo "+$($config.toolchain)" build --locked --release -p ratex-ffi --target $nativeTarget.target --target-dir (Join-Path $upstream 'target')
     if ($LASTEXITCODE) { throw 'Native build failed.' }
-    & (Join-Path $PSScriptRoot 'update-notices.ps1')
-    $target = Join-Path $root 'src/RaTeX.Net/runtimes/win-x64/native'
+    & (Join-Path $PSScriptRoot 'update-windows-notices.ps1')
+    $target = Join-Path $root "src/RaTeX.Net/runtimes/$RuntimeIdentifier/native"
     New-Item -ItemType Directory -Force -Path $target | Out-Null
-    Copy-Item -LiteralPath "target/$($config.target)/release/ratex_ffi.dll" -Destination $target
-    Get-FileHash (Join-Path $target 'ratex_ffi.dll') -Algorithm SHA256
+    Copy-Item -LiteralPath "target/$($nativeTarget.target)/release/$($nativeTarget.library)" -Destination $target
+    Get-FileHash (Join-Path $target $nativeTarget.library) -Algorithm SHA256
 } finally {
     Pop-Location
     $env:RUSTFLAGS = $savedFlags
