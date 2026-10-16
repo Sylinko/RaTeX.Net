@@ -164,15 +164,15 @@
         "resolved": "0.90.3",
         "contentHash": "T5BqXZb3Lqg+5yKInnW+hPtv/lzW8S8tZbLKFCbzgFF6iy4w5O3MDNzppgQfudR1nqMSpSDjX7w9OmDljV4GyA=="
       },
+      "RaTeX": {
+        "type": "Project"
+      },
       "ratex.avalonia": {
         "type": "Project",
         "dependencies": {
           "Avalonia": "[12.0.0, )",
-          "RaTeX.Net": "[0.1.0, )"
+          "RaTeX": "[0.1.0, )"
         }
-      },
-      "ratex.net": {
-        "type": "Project"
       },
       "Avalonia": {
         "type": "CentralTransitive",
@@ -372,15 +372,15 @@
           "System.IO.Pipelines": "8.0.0"
         }
       },
+      "RaTeX": {
+        "type": "Project"
+      },
       "ratex.avalonia": {
         "type": "Project",
         "dependencies": {
           "Avalonia": "[12.0.0, )",
-          "RaTeX.Net": "[0.1.0, )"
+          "RaTeX": "[0.1.0, )"
         }
-      },
-      "ratex.net": {
-        "type": "Project"
       },
       "Avalonia": {
         "type": "CentralTransitive",

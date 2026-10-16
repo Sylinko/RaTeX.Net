@@ -123,7 +123,7 @@ jobs:
       - name: Test managed projects on Windows
         run: dotnet test RaTeX.slnx -c Release --no-build --no-restore
 
-      - name: Pack RaTeX.Net with all native libraries
+      - name: Pack RaTeX with all native libraries
         run: dotnet pack src/RaTeX.Net/RaTeX.Net.csproj -c Release --no-build --no-restore -o artifacts/packages
 
       - name: Pack RaTeX.Avalonia

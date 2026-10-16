@@ -28,7 +28,7 @@
         "resolved": "0.11.4",
         "contentHash": "yZ8+Lgwo+KtRI29TB2mIOEMzV+csMJ+pKZg4YHReAP3vRewWLKKeYfrBDo5FS69rWnEbCfU3sbM+ZEQr+GDLtg=="
       },
-      "ratex.net": {
+      "RaTeX": {
         "type": "Project"
       }
     },
@@ -59,7 +59,7 @@
         "resolved": "0.11.4",
         "contentHash": "yZ8+Lgwo+KtRI29TB2mIOEMzV+csMJ+pKZg4YHReAP3vRewWLKKeYfrBDo5FS69rWnEbCfU3sbM+ZEQr+GDLtg=="
       },
-      "ratex.net": {
+      "RaTeX": {
         "type": "Project"
       }
     }

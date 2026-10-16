@@ -12,7 +12,7 @@ public class DeploymentTests
     {
         var directory = Path.Combine(AppContext.BaseDirectory, "deployment-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, "RaTeX.Net.dll");
+        var path = Path.Combine(directory, "RaTeX.dll");
         File.Copy(typeof(Ratex).Assembly.Location, path);
         var libraryName = OperatingSystem.IsMacOS() ? "libratex_ffi.dylib" : "ratex_ffi.dll";
         var libraryPath = Path.Combine(directory, libraryName);

@@ -93,7 +93,7 @@
           "xunit.extensibility.core": "[2.9.3]"
         }
       },
-      "ratex.net": {
+      "RaTeX": {
         "type": "Project"
       }
     },
@@ -189,7 +189,7 @@
           "xunit.extensibility.core": "[2.9.3]"
         }
       },
-      "ratex.net": {
+      "RaTeX": {
         "type": "Project"
       }
     }

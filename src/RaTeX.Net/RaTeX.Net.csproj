@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <PackageId>RaTeX</PackageId>
+    <AssemblyName>RaTeX</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>Bindings to the RaTeX C ABI with immutable managed display lists.</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

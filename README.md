@@ -1,4 +1,4 @@
-# RaTeX.Net / RaTeX.Avalonia
+# RaTeX / RaTeX.Avalonia
 
 **.NET bindings and Avalonia rendering for [RaTeX](https://github.com/erweixin/RaTeX).**
 

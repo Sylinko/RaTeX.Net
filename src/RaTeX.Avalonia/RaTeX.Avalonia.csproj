@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <PackageId>RaTeX.Avalonia</PackageId>
+    <AssemblyName>RaTeX.Avalonia</AssemblyName>
     <Description>Avalonia rendering for managed RaTeX display lists.</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
