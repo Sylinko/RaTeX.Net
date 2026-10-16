@@ -2,12 +2,15 @@
 
 **.NET bindings and Avalonia rendering for [RaTeX](https://github.com/erweixin/RaTeX).**
 
+**Credits:** The original [RaTeX](https://github.com/erweixin/RaTeX) engine was created by [@erweixin](https://github.com/erweixin). This is an **unofficial** project builds upon their work to bring RaTeX to .NET and Avalonia.
+
 ## Build
 
 Build with .NET SDK 8/10 and Rust 1.98.1, including the `rust-docs` component.
 
 - Windows builds use PowerShell 7 and the Visual C++ build tools.
 - macOS builds use Bash, Python 3, and Xcode Command Line Tools.
+- Linux builds use Bash, Python 3, GCC/build-essential, curl, and a glibc-based system.
 
 Build the native library on Windows:
 
@@ -24,6 +27,15 @@ bash build/build-mac-native.sh osx-arm64
 bash build/build-mac-native.sh osx-x64
 ```
 
+On Linux, build on a host matching the target architecture:
+
+```bash
+bash build/build-linux-native.sh
+# Or select the host's RID explicitly:
+bash build/build-linux-native.sh linux-x64
+bash build/build-linux-native.sh linux-arm64
+```
+
 Then build, test, or pack the managed projects:
 
 ```sh
@@ -34,18 +46,21 @@ dotnet pack src/RaTeX.Avalonia -c Release -o artifacts/packages
 dotnet run --project samples/RaTeX.Avalonia.Demo -c Release -f net10.0
 ```
 
-Both native scripts read `build/native.json`, install the selected Rust target, and place its library under `src/RaTeX.Net/runtimes/{rid}/native/`:
+The native scripts read `build/native.json`, install the selected Rust target, and place its library under `src/RaTeX.Net/runtimes/{rid}/native/`:
 
-| RID       | Native library     |
-|-----------|--------------------|
-| win-x64   | ratex_ffi.dll      |
-| osx-arm64 | libratex_ffi.dylib |
-| osx-x64   | libratex_ffi.dylib |
+| RID         | Native library    |
+|-------------|-------------------|
+| win-x64     | ratex_ffi.dll     |
+| osx-arm64   | libratex_ffi.dylib |
+| osx-x64     | libratex_ffi.dylib |
+| linux-x64   | libratex_ffi.so   |
+| linux-arm64 | libratex_ffi.so   |
 
 - Windows needs the x64 Visual C++ runtime (`VCRUNTIME140.dll`), UCRT, and system DLLs.
-- macOS support has not been tested.
+- Linux CI builds use Ubuntu 22.04 on each architecture. Compatibility with older distributions is not established; musl/Alpine is not supported.
+- macOS and Linux runtime support has not been tested.
 
-Packages include the native assets present in that directory. For a package covering all three RIDs, collect their native libraries and generated notices in the same checkout before packing.
+Each native build also generates `licenses/THIRD_PARTY_NOTICES.{rid}.txt`. Regenerate or check macOS/Linux notices with `bash build/update-mac-notices.sh [rid] [--check]` or `bash build/update-linux-notices.sh [rid] [--check]`.
 
 ## Binding
 
@@ -102,6 +117,8 @@ The control preserves each item's color and alpha across theme changes. To updat
 `PreparationError` reports failures to prepare fonts, glyphs, or geometry. Assign a new display list to retry preparation.
 
 The renderer uses the exact bundled math glyph when available. Font fallback is enabled by default: missing glyphs and upstream Unicode fallback IDs use Avalonia's configured or system fonts. Basic CJK and single-character emoji work with a matching font. Fallback retains native positions and estimated metrics; complex shaping, bidi, multi-character emoji sequences, and color emoji need text rendering support beyond this character-level fallback.
+
+Linux applications also need Avalonia's [Linux platform dependencies](https://docs.avaloniaui.net/docs/platform-specific-guides/linux) and installed or configured fonts for CJK/emoji fallback.
 
 To restrict rendering to bundled fonts, set `FormulaControl.IsFontFallbackEnabled = false` or call `PreparedDisplayList.Prepare(snapshot, fontSize, isFontFallbackEnabled: false)`. Changing this setting rebuilds the control's drawing resources without another parse. Set preferred fallback families through Avalonia's `FontManagerOptions.FontFallbacks`. A glyph that cannot be resolved, or an unknown font ID, causes a rendering error.
 

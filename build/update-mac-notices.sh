@@ -40,6 +40,6 @@ fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ "$check" == true ]]; then
-    exec python3 "$script_dir/generate-mac-notices.py" "$rid" --check
+    exec python3 "$script_dir/generate-native-notices.py" "$rid" --check
 fi
-exec python3 "$script_dir/generate-mac-notices.py" "$rid"
+exec python3 "$script_dir/generate-native-notices.py" "$rid"

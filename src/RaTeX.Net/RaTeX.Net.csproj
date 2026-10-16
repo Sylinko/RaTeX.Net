@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <Target Name="RequireNativeAsset" BeforeTargets="GenerateNuspec">
-    <Error Condition="'@(RatexNativeAsset)' == ''" Text="Run build/build-windows-native.ps1 or build/build-mac-native.sh before packing. Stage every required RID under runtimes/{rid}/native/." />
+    <Error Condition="'@(RatexNativeAsset)' == ''" Text="Run build/build-windows-native.ps1, build/build-mac-native.sh, or build/build-linux-native.sh before packing. Stage every required RID under runtimes/{rid}/native/." />
   </Target>
 
   <ItemGroup>
@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <RatexNativeAsset Include="runtimes/*/native/*.dll;runtimes/*/native/*.dylib" />
+    <RatexNativeAsset Include="runtimes/*/native/*.dll;runtimes/*/native/*.dylib;runtimes/*/native/*.so" />
     <None Remove="runtimes/**/*" />
     <None Include="@(RatexNativeAsset)" Pack="true" PackagePath="%(Identity)" />
     <!-- Source projects copy the selected native asset beside the assembly; NuGet uses RID assets. -->

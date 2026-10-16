@@ -14,6 +14,14 @@
     "osx-x64": {
       "target": "x86_64-apple-darwin",
       "library": "libratex_ffi.dylib"
+    },
+    "linux-x64": {
+      "target": "x86_64-unknown-linux-gnu",
+      "library": "libratex_ffi.so"
+    },
+    "linux-arm64": {
+      "target": "aarch64-unknown-linux-gnu",
+      "library": "libratex_ffi.so"
     }
   }
 }

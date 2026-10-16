@@ -23,6 +23,12 @@ jobs:
           - rid: osx-x64
             runner: macos-15-intel
             library: libratex_ffi.dylib
+          - rid: linux-x64
+            runner: ubuntu-22.04
+            library: libratex_ffi.so
+          - rid: linux-arm64
+            runner: ubuntu-22.04-arm
+            library: libratex_ffi.so
     steps:
       - uses: actions/checkout@v6
 
@@ -40,6 +46,13 @@ jobs:
           toolchain="$(/usr/bin/plutil -extract toolchain raw -o - build/native.json)"
           rustup toolchain install "$toolchain" --profile minimal --component rust-docs
 
+      - name: Install Rust (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          toolchain="$(python3 -c 'import json; print(json.load(open("build/native.json"))["toolchain"])')"
+          rustup toolchain install "$toolchain" --profile minimal --component rust-docs
+
       - name: Build native library (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -49,6 +62,11 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         run: bash build/build-mac-native.sh "${{ matrix.rid }}"
+
+      - name: Build native library (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: bash build/build-linux-native.sh "${{ matrix.rid }}"
 
       - name: Upload native library and notices
         uses: actions/upload-artifact@v7

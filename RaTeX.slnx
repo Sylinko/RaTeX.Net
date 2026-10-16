@@ -7,7 +7,8 @@
   <Folder Name="/Licenses/">
     <File Path="build/update-windows-notices.ps1" />
     <File Path="build/update-mac-notices.sh" />
-    <File Path="build/generate-mac-notices.py" />
+    <File Path="build/update-linux-notices.sh" />
+    <File Path="build/generate-native-notices.py" />
     <File Path="LICENSE" />
     <File Path="licenses/KaTeX-fonts-NOTICE.txt" />
     <File Path="licenses/RaTeX-MIT.txt" />
