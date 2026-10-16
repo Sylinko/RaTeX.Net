@@ -2,6 +2,7 @@
   <Folder Name="/GitHub/">
     <File Path=".github/workflows/nuget-publish.yml" />
     <File Path=".gitignore" />
+    <File Path="AGENTS.md" />
     <File Path="README.md" />
   </Folder>
   <Folder Name="/Licenses/">
