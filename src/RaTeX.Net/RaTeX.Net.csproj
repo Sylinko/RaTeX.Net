@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Description>Bindings to the RaTeX C ABI with immutable managed display lists.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
+    <RootNamespace>RaTeX</RootNamespace>
+  </PropertyGroup>
+
+  <Target Name="RequireNativeAsset" BeforeTargets="GenerateNuspec">
+    <Error Condition="!Exists('runtimes/win-x64/native/ratex_ffi.dll')" Text="Run build/build-native.ps1 before packing." />
+  </Target>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="RaTeX.Net.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="runtimes/**/*" Pack="true" PackagePath="runtimes/" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

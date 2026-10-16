@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/GitHub/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Licenses/">
+    <File Path="build/update-notices.ps1" />
+    <File Path="LICENSE" />
+    <File Path="licenses/KaTeX-fonts-NOTICE.txt" />
+    <File Path="licenses/RaTeX-MIT.txt" />
+    <File Path="licenses/SIL-OFL-1.1.txt" />
+    <File Path="THIRD_PARTY_NOTICES.txt" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/RaTeX.Avalonia.Demo/RaTeX.Avalonia.Demo.csproj" />
+  </Folder>
+  <Folder Name="/Solution/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/RaTeX.Avalonia/RaTeX.Avalonia.csproj" />
+    <Project Path="src/RaTeX.Net/RaTeX.Net.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/RaTeX.Avalonia.Tests/RaTeX.Avalonia.Tests.csproj" />
+    <Project Path="tests/RaTeX.Net.Tests/RaTeX.Net.Tests.csproj" />
+  </Folder>
+</Solution>

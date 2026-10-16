@@ -1,0 +1,84 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:RaTeX.Avalonia.Demo"
+        xmlns:ratex="using:RaTeX.Avalonia"
+        xmlns:demo="clr-namespace:RaTeX.Avalonia.Demo"
+        x:Class="RaTeX.Avalonia.Demo.MainWindow" x:DataType="local:DemoViewModel"
+        Title="RaTeX.Avalonia Demo" Width="1100" Height="450" MinWidth="1000" MinHeight="450">
+  <Grid Margin="24" ColumnDefinitions="Auto,18,*">
+    <StackPanel Grid.Column="0" Spacing="8" VerticalAlignment="Top" Width="450">
+      <!-- Examples -->
+      <DockPanel HorizontalSpacing="4">
+        <Label Content="Examples" FontSize="18" FontWeight="SemiBold" Target="ExamplePicker"/>
+        <Border Height="1" CornerRadius="16" HorizontalAlignment="Stretch" Background="DimGray"/>
+      </DockPanel>
+      <ComboBox x:Name="ExamplePicker" ItemsSource="{x:Static demo:DemoViewModel.Examples}"
+                SelectedItem="{Binding SelectedExample}"
+                HorizontalAlignment="Stretch" AutomationProperties.Name="Formula examples"/>
+      <TextBox x:Name="FormulaEditor" Text="{Binding Latex}" AcceptsReturn="True" MinHeight="90"
+               FontFamily="Consolas"
+               AutomationProperties.Name="LaTeX formula"/>
+
+      <!-- Configs -->
+      <DockPanel HorizontalSpacing="4" Margin="0,8,0,0">
+        <Label Content="Configs" FontSize="18" FontWeight="SemiBold" Target="ConfigGrid"/>
+        <Border Height="1" CornerRadius="16" HorizontalAlignment="Stretch" Background="DimGray"/>
+      </DockPanel>
+      <Grid x:Name="ConfigGrid" ColumnDefinitions="*,16,*" RowDefinitions="*,8,*,8,*">
+        <StackPanel Grid.Column="0" Grid.Row="0" Spacing="5">
+          <Label Content="Math style" Target="ModePicker"/>
+          <ComboBox x:Name="ModePicker" ItemsSource="{Binding Modes}" SelectedItem="{Binding Mode}"
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.Name="Math style"/>
+        </StackPanel>
+        <StackPanel Grid.Column="2" Grid.Row="0" Spacing="5">
+          <Label Content="Default formula color" Target="ColorPicker"/>
+          <ComboBox x:Name="ColorPicker" ItemsSource="{Binding Colors}" SelectedItem="{Binding SelectedColor}"
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.Name="Default formula color"/>
+        </StackPanel>
+
+        <CheckBox Grid.Column="0" Grid.Row="2" Content="Dark preview" IsChecked="{Binding IsDark}"
+                  VerticalAlignment="Bottom"/>
+        <CheckBox Grid.Column="2" Grid.Row="2" Content="Allow font fallback"
+                  IsChecked="{Binding IsFontFallbackEnabled}"
+                  VerticalAlignment="Bottom"/>
+
+        <StackPanel Grid.Column="0" Grid.Row="4" Spacing="4">
+          <TextBlock Text="{Binding FontSize, StringFormat='Font size: {0:F0} DIP'}"/>
+          <Slider Minimum="10" Maximum="96" Value="{Binding FontSize}" AutomationProperties.Name="Font size"/>
+        </StackPanel>
+        <StackPanel Grid.Column="2" Grid.Row="4" Spacing="4">
+          <TextBlock Text="{Binding PaddingSize, StringFormat='Padding: {0:F0} DIP'}"/>
+          <Slider Minimum="0" Maximum="40" Value="{Binding PaddingSize}" AutomationProperties.Name="Padding"/>
+        </StackPanel>
+      </Grid>
+    </StackPanel>
+
+    <!-- Preview -->
+    <StackPanel Grid.Column="2" Spacing="8" VerticalAlignment="Top">
+      <DockPanel HorizontalSpacing="4">
+        <Label Content="Preview" FontSize="18" FontWeight="SemiBold" Target="ConfigGrid"/>
+        <Border Height="1" CornerRadius="16" HorizontalAlignment="Stretch" Background="DimGray"/>
+      </DockPanel>
+      <TextBlock Text="{Binding Metrics}" TextWrapping="Wrap"/>
+      <Border Background="{Binding PreviewBackground}" BorderBrush="#808080" BorderThickness="1" MinHeight="160">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+          <Grid Margin="12" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <ratex:FormulaControl x:Name="Primary" DisplayList="{Binding DisplayList}" FontSize="{Binding FontSize}"
+                                  Padding="{Binding FormulaPadding}"
+                                  IsFontFallbackEnabled="{Binding IsFontFallbackEnabled}"/>
+            <local:BaselineGuide Baseline="{Binding #Primary.Baseline}" IsHitTestVisible="False"/>
+          </Grid>
+        </ScrollViewer>
+      </Border>
+
+      <StackPanel Spacing="4">
+        <TextBlock Text="{Binding NativeError}" Foreground="#CA4242" TextWrapping="Wrap"/>
+        <TextBlock Text="{Binding EnvironmentError}" Foreground="#CA4242" TextWrapping="Wrap"/>
+        <TextBlock Text="{Binding #Primary.PreparationError.Message, TargetNullValue='', FallbackValue=''}"
+                   Foreground="#C17713" TextWrapping="Wrap"/>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</Window>

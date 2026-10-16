@@ -1,0 +1,15 @@
+x+y=α+β
+x_1^{y^2}+z_{i_j}
+\frac{1}{\frac{2}{3}}+\sqrt[3]{x}
+\int_0^\infty e^{-x}\,dx
+\sum_{n=1}^\infty\frac{1}{n^2}
+\lim_{x\to0}\frac{\sin x}{x}
+\left\{\frac{a}{b}\right\}
+\begin{pmatrix}a&b\\c&d\end{pmatrix}
+\begin{aligned}a&=b+c\\d&=e\end{aligned}
+\text{Hello}\quad\mathbf{x}+\mathfrak{g}+\mathbb{R}
+\boxed{x}\quad\colorbox{yellow}{hi}\quad\textcolor{red}{y}
+\begin{array}{c:c}a&b\\\hdashline c&d\end{array}
+\imageof
+𝐀+𝑥
+\textit{abc}\quad\mathsf{xyz}\quad\mathtt{123}\quad\mathcal{ABC}
