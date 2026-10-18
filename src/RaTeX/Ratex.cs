@@ -39,8 +39,46 @@ public static class Ratex
     /// <param name="displayList">The immutable layout on success; otherwise null.</param>
     /// <param name="error">The copied native error on failure; otherwise null.</param>
     /// <returns>Whether parsing and layout succeeded.</returns>
-    public static unsafe bool TryParseAndLayout(
+    public static bool TryParseAndLayout(
         string latex,
+        RatexOptions? options,
+        [NotNullWhen(true)] out DisplayList? displayList,
+        [NotNullWhen(false)] out RatexError? error)
+        => TryParseAndLayoutWithFallbackMetrics(latex, [], options, out displayList, out error);
+
+    /// <summary>
+    /// Parses a formula using host-measured metrics for glyphs missing from the bundled math fonts.
+    /// </summary>
+    /// <remarks>
+    /// Each entry requires a valid Unicode scalar and finite measurements; signed values are allowed. The last duplicate wins.
+    /// Known math glyphs and unlisted characters keep their normal metrics. Empty tables use the original
+    /// native entry point; nonempty tables require the fallback metrics C ABI.
+    /// </remarks>
+    /// <param name="latex">LaTeX source without embedded NUL or unpaired UTF-16 surrogates.</param>
+    /// <param name="metrics">Base-size em measurements from the same fonts used for drawing.</param>
+    /// <param name="options">Layout options, or null to use defaults.</param>
+    /// <returns>An immutable managed layout that retains no native memory or input table.</returns>
+    public static DisplayList ParseAndLayoutWithFallbackMetrics(
+        string latex, ReadOnlySpan<FallbackGlyphMetrics> metrics, RatexOptions? options = null)
+        => TryParseAndLayoutWithFallbackMetrics(latex, metrics, options, out var displayList, out var error)
+            ? displayList : throw new RatexException(error);
+
+    /// <summary>
+    /// Attempts layout with host measurements, returning native failures as a copied error snapshot.
+    /// </summary>
+    /// <remarks>
+    /// Uses the same table contract as <see cref="ParseAndLayoutWithFallbackMetrics"/>.
+    /// Invalid arguments, deployment errors and protocol violations throw, as with <see cref="TryParseAndLayout"/>.
+    /// </remarks>
+    /// <param name="latex">LaTeX source to parse.</param>
+    /// <param name="metrics">Base-size em measurements, borrowed until this synchronous call returns.</param>
+    /// <param name="options">Layout options, or null to use defaults.</param>
+    /// <param name="displayList">The immutable layout on success; otherwise null.</param>
+    /// <param name="error">The copied native error on failure; otherwise null.</param>
+    /// <returns>Whether parsing and layout succeeded.</returns>
+    public static unsafe bool TryParseAndLayoutWithFallbackMetrics(
+        string latex,
+        ReadOnlySpan<FallbackGlyphMetrics> metrics,
         RatexOptions? options,
         [NotNullWhen(true)] out DisplayList? displayList,
         [NotNullWhen(false)] out RatexError? error)
@@ -61,6 +99,25 @@ public static class Ratex
         if (!IsValidColor(color))
         {
             throw new ArgumentOutOfRangeException(nameof(options), "RGBA must be finite and in [0, 1].");
+        }
+
+        var nativeMetrics = metrics.IsEmpty ? [] : new NativeFallbackGlyphMetrics[metrics.Length];
+        for (var i = 0; i < metrics.Length; i++)
+        {
+            var metric = metrics[i];
+            if (!Rune.IsValid(metric.CodePoint) || !double.IsFinite(metric.Width) ||
+                !double.IsFinite(metric.Height) || !double.IsFinite(metric.Depth))
+            {
+                throw new ArgumentException("Fallback metrics require valid Unicode scalars and finite measurements.", nameof(metrics));
+            }
+
+            nativeMetrics[i] = new NativeFallbackGlyphMetrics
+            {
+                CodePoint = metric.CodePoint,
+                Width = metric.Width,
+                Height = metric.Height,
+                Depth = metric.Depth
+            };
         }
 
         byte[] utf8;
@@ -88,8 +145,12 @@ public static class Ratex
         };
         NativeResult result;
         fixed (byte* input = utf8)
+        fixed (NativeFallbackGlyphMetrics* table = nativeMetrics)
         {
-            result = NativeMethods.ParseAndLayout(input, &nativeOptions);
+            // Empty tables keep existing callers compatible with older native builds.
+            result = metrics.IsEmpty
+                ? NativeMethods.ParseAndLayout(input, &nativeOptions)
+                : NativeMethods.ParseAndLayoutWithFallbackMetrics(input, &nativeOptions, table, (nuint)nativeMetrics.Length);
         }
 
         if (result.ErrorCode != 0)

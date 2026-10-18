@@ -37,6 +37,18 @@ internal struct NativeResult
 }
 
 /// <summary>
+/// Mirrors native fallback metrics. The array is borrowed until the call returns.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct NativeFallbackGlyphMetrics
+{
+    public uint CodePoint;
+    public double Width;
+    public double Height;
+    public double Depth;
+}
+
+/// <summary>
 /// Binds the pinned C ABI using the runtime's native asset resolution.
 /// </summary>
 internal static partial class NativeMethods
@@ -47,6 +59,14 @@ internal static partial class NativeMethods
     [LibraryImport("ratex_ffi", EntryPoint = "ratex_parse_and_layout")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial NativeResult ParseAndLayout(byte* latex, NativeOptions* options);
+
+    /// <summary>
+    /// Parses with host measurements borrowed until the call returns.
+    /// </summary>
+    [LibraryImport("ratex_ffi", EntryPoint = "ratex_parse_and_layout_with_fallback_metrics")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial NativeResult ParseAndLayoutWithFallbackMetrics(
+        byte* latex, NativeOptions* options, NativeFallbackGlyphMetrics* metrics, nuint metricsCount);
 
     /// <summary>
     /// Releases a successful result using its originating native allocator.

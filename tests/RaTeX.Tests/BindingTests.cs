@@ -16,6 +16,10 @@ public class BindingTests
         Assert.Equal(16, Marshal.SizeOf<NativeColor>());
         Assert.Equal(16, Marshal.SizeOf<NativeResult>());
         Assert.Equal(8, Marshal.OffsetOf<NativeResult>(nameof(NativeResult.ErrorCode)).ToInt32());
+        Assert.Equal(32, Marshal.SizeOf<NativeFallbackGlyphMetrics>());
+        Assert.Equal(8, Marshal.OffsetOf<NativeFallbackGlyphMetrics>(nameof(NativeFallbackGlyphMetrics.Width)).ToInt32());
+        Assert.Equal(16, Marshal.OffsetOf<NativeFallbackGlyphMetrics>(nameof(NativeFallbackGlyphMetrics.Height)).ToInt32());
+        Assert.Equal(24, Marshal.OffsetOf<NativeFallbackGlyphMetrics>(nameof(NativeFallbackGlyphMetrics.Depth)).ToInt32());
     }
 
     [Fact]
@@ -86,6 +90,56 @@ public class BindingTests
         foreach (var component in new[] { float.NaN, float.PositiveInfinity, -1, 2 })
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => Ratex.ParseAndLayout("x", new RatexOptions { DefaultColor = new RatexColor(component, 0, 0, 1) }));
+        }
+    }
+
+    [Theory]
+    [InlineData("中")]
+    [InlineData("😀")]
+    public void ParseAndLayoutWithFallbackMetrics_WithScalar_UsesHostDimensions(string character)
+    {
+        var source = $@"\text{{{character}}}";
+        var metrics = new FallbackGlyphMetrics[] { new((uint)char.ConvertToUtf32(character, 0), 1.2, .8, .2) };
+        var measured = Ratex.ParseAndLayoutWithFallbackMetrics(source, metrics);
+        Assert.Equal(1.2, measured.Width, 8);
+        Assert.Equal(.8, measured.Height, 8);
+        Assert.Equal(.2, measured.Depth, 8);
+        Assert.Equal(1.44, Ratex.ParseAndLayoutWithFallbackMetrics($@"\frac{{{source}}}{{x}}", metrics).Width, 8);
+        var script = Ratex.ParseAndLayoutWithFallbackMetrics($@"{{\scriptstyle {source}}}", metrics);
+        Assert.Equal(.84, script.Width, 8);
+        Assert.Equal(.56, script.Height, 8);
+        Assert.Equal(.14, script.Depth, 8);
+    }
+
+    [Fact]
+    public void ParseAndLayoutWithFallbackMetrics_WithLargeTable_PreservesDefaultsAndUsesLastDuplicate()
+    {
+        var metrics = new FallbackGlyphMetrics[65_537];
+        Array.Fill(metrics, new('中', 1.2, .8, .2));
+        metrics[^2] = new('中', 1.4, .9, .1);
+        metrics[^1] = new('x', 5, 5, 5);
+        Assert.Equal(1.4, Ratex.ParseAndLayoutWithFallbackMetrics(@"\text{中}", metrics).Width, 8);
+        var baseline = Ratex.ParseAndLayout(@"\text{中}");
+        Assert.Equal(baseline.Width, Ratex.ParseAndLayoutWithFallbackMetrics(@"\text{中}", []).Width);
+        foreach (var source in new[] { "x", @"\text{x}", @"\text{日}" })
+        {
+            baseline = Ratex.ParseAndLayout(source);
+            var actual = Ratex.ParseAndLayoutWithFallbackMetrics(source, metrics);
+            Assert.Equal(baseline.Width, actual.Width);
+            Assert.Equal(baseline.Items.ToArray(), actual.Items.ToArray());
+        }
+    }
+
+    [Fact]
+    public void TryParseAndLayoutWithFallbackMetrics_WithInvalidTable_Throws()
+    {
+        foreach (var metric in new FallbackGlyphMetrics[]
+        {
+            new(0xD800, 1, 1, 0), new(0x110000, 1, 1, 0),
+            new('中', double.NaN, 1, 0), new('中', 1, double.PositiveInfinity, 0), new('中', 1, 1, double.NegativeInfinity)
+        })
+        {
+            Assert.Throws<ArgumentException>(() => Ratex.TryParseAndLayoutWithFallbackMetrics("x", [metric], null, out _, out _));
         }
     }
 
