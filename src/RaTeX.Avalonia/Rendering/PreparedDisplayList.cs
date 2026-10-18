@@ -29,8 +29,8 @@ public sealed class PreparedDisplayList : IDisposable
     /// Prepares a layout with optional character-level fallback through Avalonia's font manager.
     /// </summary>
     /// <remarks>
-    /// Fallback preserves native positions and estimated metrics. It does not reshape text runs,
-    /// reflow mathematics, or guarantee color emoji and multi-codepoint sequence rendering.
+    /// Preserves supplied positions and metrics; use <see cref="FormulaLayout"/> for host-measured layout.
+    /// Does not reshape or reflow text, or guarantee color emoji and multi-codepoint sequence rendering.
     /// Applications can configure preferred fallback fonts through FontManagerOptions.FontFallbacks.
     /// </remarks>
     /// <param name="displayList">The managed layout to prepare without modifying it.</param>
@@ -76,7 +76,7 @@ public sealed class PreparedDisplayList : IDisposable
                             throw new RatexRenderException("Invalid glyph scale or Unicode scalar.");
                         }
 
-                        var (face, index, cp) = MathFonts.Current.ResolveGlyph(glyph.Font, glyph.CodePoint, isFontFallbackEnabled);
+                        var (face, index, cp, _) = MathFonts.Current.ResolveGlyph(glyph.Font, glyph.CodePoint, isFontFallbackEnabled);
 
                         var run = new GlyphRun(
                             face,

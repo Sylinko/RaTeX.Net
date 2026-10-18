@@ -99,8 +99,17 @@ The control preserves each item's color and alpha across theme changes. To chang
 The renderer uses the exact bundled math glyph when available. Font fallback is enabled by default: missing glyphs and upstream Unicode fallback IDs use Avalonia's configured or system fonts.
 Basic CJK and single-character emoji work when a matching font is available.
 
+For layout measured with those fonts, call `FormulaLayout.ParseAndLayoutAsync` on the Avalonia UI thread:
+
+```csharp
+var snapshot = await FormulaLayout.ParseAndLayoutAsync(@"\frac{\text{中文}}{x}");
+formula.DisplayList = snapshot;
+```
+
+Generate a new layout after changing the configured fonts.
+
 > [!NOTE]
-> Fallback keeps native positions and estimated metrics. Complex shaping, bidi, multi-character emoji sequences, and color emoji need text rendering support beyond this character-level fallback.
+> Ordinary `Ratex.ParseAndLayout` still uses estimated fallback metrics. Complex shaping, bidi, multi-character emoji sequences, and color emoji need text rendering support beyond this character-level fallback.
 
 To use only bundled fonts, set `FormulaControl.IsFontFallbackEnabled = false` or call `PreparedDisplayList.Prepare(snapshot, fontSize, isFontFallbackEnabled: false)`.
 Changing this setting rebuilds drawing resources without another parse. Set preferred fallback families through Avalonia's `FontManagerOptions.FontFallbacks`.

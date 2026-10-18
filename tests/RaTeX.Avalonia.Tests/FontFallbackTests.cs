@@ -10,6 +10,60 @@ public sealed class FontFallbackTests
 {
     [AvaloniaTheory]
     [InlineData("中")]
+    [InlineData("😀")]
+    public async Task FormulaLayout_WithHostFont_UsesMeasuredAdvanceAndInk(string character)
+    {
+        var source = $@"\text{{{character}}}";
+        var initial = Ratex.ParseAndLayout(source);
+        var glyph = Assert.IsType<GlyphPathItem>(Assert.Single(initial.Items));
+        if (!FontManager.Current.TryMatchCharacter((int)glyph.CodePoint,
+            FontStyle.Normal, FontWeight.Normal, FontStretch.Normal, null, null, out _))
+        {
+            await Assert.ThrowsAsync<RatexRenderException>(() => FormulaLayout.ParseAndLayoutAsync(source));
+            return;
+        }
+
+        var metric = Assert.Single(FormulaLayout.MeasureFallbackGlyphs(initial));
+        var resolved = MathFonts.Current.ResolveGlyph(glyph.Font, glyph.CodePoint, true);
+        Assert.True(resolved.Face.TryGetHorizontalGlyphAdvance(resolved.Index, out var advance));
+        Assert.Equal((double)advance / resolved.Face.Metrics.DesignEmHeight, metric.Width, 8);
+        Assert.True(metric.Height + metric.Depth > 0);
+        var measured = await FormulaLayout.ParseAndLayoutAsync(source);
+        Assert.Equal(metric.Width, measured.Width, 8);
+        Assert.Equal(metric.Height, measured.Height, 8);
+        Assert.Equal(metric.Depth, measured.Depth, 8);
+
+        var pair = Ratex.ParseAndLayout($@"\text{{{character}{character}}}");
+        Assert.Single(FormulaLayout.MeasureFallbackGlyphs(pair));
+    }
+
+    [AvaloniaFact]
+    public async Task FormulaLayout_WithBundledGlyphs_PreservesOriginalLayout()
+    {
+        var initial = Ratex.ParseAndLayout(@"\frac{x}{\sqrt{y}} + \mathbb{R}");
+        Assert.Empty(FormulaLayout.MeasureFallbackGlyphs(initial));
+        var measured = await FormulaLayout.ParseAndLayoutAsync(@"\frac{x}{\sqrt{y}} + \mathbb{R}");
+        Assert.Equal(initial.Width, measured.Width);
+        Assert.Equal(initial.Items, measured.Items);
+        await Assert.ThrowsAsync<RatexException>(() => FormulaLayout.ParseAndLayoutAsync(@"\frac{"));
+    }
+
+    [AvaloniaFact]
+    public void MeasureFallbackGlyphs_WithScale_IgnoresNativeStyleScaling()
+    {
+        var initial = new DisplayList(1, 1, 1, 0,
+            [new GlyphPathItem(0, 1, .7, "CJK-Regular", 'A', RatexColor.Black)]);
+        var metric = Assert.Single(FormulaLayout.MeasureFallbackGlyphs(initial));
+        var fullSize = initial with { Items = [new GlyphPathItem(0, 1, 1, "CJK-Regular", 'A', RatexColor.Black)] };
+        Assert.Equal(metric, Assert.Single(FormulaLayout.MeasureFallbackGlyphs(fullSize)));
+        Assert.Throws<RatexRenderException>(() => FormulaLayout.MeasureFallbackGlyphs(initial with
+        {
+            Items = [new GlyphPathItem(0, 1, 1, "CJK-Regular", 0x10FFFF, RatexColor.Black)]
+        }));
+    }
+
+    [AvaloniaTheory]
+    [InlineData("中")]
     [InlineData("한")]
     [InlineData("😀")]
     public void Prepare_WithFallbackCharacter_DrawsMatchedHostGlyph(string character)

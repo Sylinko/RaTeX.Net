@@ -85,7 +85,7 @@ internal sealed class MathFonts : FontCollectionBase
     /// The font manager owns fallback faces. Only prepared glyph runs are owned by the renderer.
     /// Unknown font IDs remain errors so malformed display lists cannot silently change font families.
     /// </remarks>
-    internal (GlyphTypeface Face, ushort Index, uint CodePoint) ResolveGlyph(
+    internal (GlyphTypeface Face, ushort Index, uint CodePoint, bool IsFallback) ResolveGlyph(
         string font,
         uint codePoint,
         bool isFontFallbackEnabled)
@@ -97,7 +97,7 @@ internal sealed class MathFonts : FontCollectionBase
             mathFace = Get(font);
             if (mathFace.CharacterToGlyphMap.TryGetGlyph((int)mappedCodePoint, out var index) && index != 0)
             {
-                return (mathFace, index, mappedCodePoint);
+                return (mathFace, index, mappedCodePoint, false);
             }
         }
 
@@ -106,7 +106,7 @@ internal sealed class MathFonts : FontCollectionBase
             throw new RatexRenderException($"Missing glyph U+{codePoint:X} in '{font}'; font fallback is disabled.");
         }
 
-        // shortcut: keep native positions and estimated metrics; feed host metrics to layout when the C ABI exposes them.
+        // Layout measurement and drawing share this resolution path so both use the same fallback font.
         var manager = FontManager.Current;
         if (manager.TryMatchCharacter(
                 (int)codePoint,
@@ -120,7 +120,7 @@ internal sealed class MathFonts : FontCollectionBase
             fallbackFace.CharacterToGlyphMap.TryGetGlyph((int)codePoint, out var fallbackIndex) &&
             fallbackIndex != 0)
         {
-            return (fallbackFace, fallbackIndex, codePoint);
+            return (fallbackFace, fallbackIndex, codePoint, true);
         }
 
         throw new RatexRenderException(

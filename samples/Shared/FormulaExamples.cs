@@ -103,12 +103,12 @@ public static class FormulaExamples
         new(
             "CJK · Chinese",
             @"\text{中文：面积}=\pi r^2",
-            "Uses configured or system fonts for Chinese. Spacing keeps the native estimates; disable font fallback to compare strict mode.",
+            "Measures configured or system Chinese fonts before final layout. Disable font fallback to compare strict mode.",
             ExampleOutcome.FontFallback),
         new(
             "CJK · Japanese",
             @"\text{日本語：面積}=\pi r^2",
-            "Uses configured or system fonts for Japanese. Glyph appearance depends on installed fonts; native layout metrics remain approximate.",
+            "Measures configured or system Japanese fonts before final layout. Glyph appearance depends on installed fonts.",
             ExampleOutcome.FontFallback),
         new(
             "CJK · Korean",

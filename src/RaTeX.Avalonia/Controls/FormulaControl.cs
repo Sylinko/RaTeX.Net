@@ -95,8 +95,8 @@ public sealed class FormulaControl : Control
     /// Gets or sets whether missing glyphs may use Avalonia's configured or system fallback fonts. The default is true.
     /// </summary>
     /// <remarks>
-    /// Native positions and metrics are retained. This permits approximate character rendering,
-    /// not full text shaping. Changing this property rebuilds drawing resources without parsing again.
+    /// Retains supplied positions and metrics without text shaping; use <see cref="FormulaLayout"/> for measured layout.
+    /// Changing this property rebuilds drawing resources without parsing again.
     /// </remarks>
     public bool IsFontFallbackEnabled
     {

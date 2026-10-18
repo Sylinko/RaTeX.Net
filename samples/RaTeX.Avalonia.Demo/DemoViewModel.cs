@@ -125,15 +125,15 @@ public sealed class DemoViewModel : INotifyPropertyChanged
     public string NativeError { get; private set; } = "";
 
     /// <summary>
-    /// Gets deployment, invalid-input, or protocol diagnostics from the most recent request.
+    /// Gets font, deployment, invalid-input, or protocol diagnostics from the most recent request.
     /// </summary>
     public string EnvironmentError { get; private set; } = "";
 
     /// <summary>
-    /// Gets a description of the current layout's metrics and successful parse count.
+    /// Gets a description of the current layout's metrics and successful layout request count.
     /// </summary>
     public string Metrics => DisplayList is { } list
-        ? $"Width {list.Width:F4} em | Height {list.Height:F4} | Depth {list.Depth:F4} | {list.Items.Length} items | {_parseCount} parses"
+        ? $"Width {list.Width:F4} em | Height {list.Height:F4} | Depth {list.Depth:F4} | {list.Items.Length} items | {_layoutCount} layouts"
         : "No layout";
 
     /// <summary>
@@ -195,8 +195,14 @@ public sealed class DemoViewModel : INotifyPropertyChanged
         get;
         set
         {
+            if (field == value)
+            {
+                return;
+            }
+
             field = value;
             Changed();
+            RequestParse();
         }
     } = true;
 
@@ -204,7 +210,7 @@ public sealed class DemoViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private FormulaExample _selectedExample;
-    private int _parseCount;
+    private int _layoutCount;
     private double _padding = 16;
     private bool _parseRequested;
 
@@ -235,18 +241,25 @@ public sealed class DemoViewModel : INotifyPropertyChanged
                 // Capture UI-owned inputs and publish only if no newer change arrived while parsing.
                 var input = Latex;
                 var options = new RatexOptions { Mode = Mode, DefaultColor = SelectedColor.Color };
+                var useFallback = IsFontFallbackEnabled;
                 DisplayList? layout = null;
                 var nativeError = "";
                 var environmentError = "";
 
                 try
                 {
-                    layout = await Task.Run(() => Ratex.ParseAndLayout(input, options));
-                    _parseCount++;
+                    layout = useFallback
+                        ? await FormulaLayout.ParseAndLayoutAsync(input, options)
+                        : await Task.Run(() => Ratex.ParseAndLayout(input, options));
+                    _layoutCount++;
                 }
                 catch (RatexException ex)
                 {
                     nativeError = $"Native error {ex.Error.NativeCode}: {ex.Error.NativeMessage}";
+                }
+                catch (Exception ex) when (ex is RatexRenderException or IOException or InvalidOperationException)
+                {
+                    environmentError = $"Font preparation: {ex.Message}";
                 }
                 catch (Exception ex) when (ex is RatexProtocolException or DllNotFoundException or BadImageFormatException
                     or EntryPointNotFoundException or ArgumentException or PlatformNotSupportedException)

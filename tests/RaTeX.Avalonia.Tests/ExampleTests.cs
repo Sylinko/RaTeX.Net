@@ -8,6 +8,57 @@ namespace RaTeX.Avalonia.Tests;
 public sealed class ExampleTests
 {
     [AvaloniaFact]
+    public async Task ExamplePicker_WithFallback_UsesMeasuredLayoutAndStrictMode()
+    {
+        var window = new MainWindow();
+        window.Show();
+        try
+        {
+            var viewModel = Assert.IsType<DemoViewModel>(window.DataContext);
+            await WaitForParseAsync(viewModel);
+            var formula = Assert.IsType<FormulaControl>(window.FindControl<FormulaControl>("Primary"));
+            foreach (var example in DemoViewModel.Examples.Where(example => example.Outcome == ExampleOutcome.FontFallback))
+            {
+                viewModel.SelectedExample = example;
+                await WaitForParseAsync(viewModel);
+                var initial = Ratex.ParseAndLayout(example.Latex);
+                FallbackGlyphMetrics[] metrics;
+                try
+                {
+                    metrics = FormulaLayout.MeasureFallbackGlyphs(initial);
+                }
+                catch (RatexRenderException)
+                {
+                    Assert.Null(viewModel.DisplayList);
+                    Assert.StartsWith("Font preparation:", viewModel.EnvironmentError);
+                    continue;
+                }
+
+                var expected = Ratex.ParseAndLayoutWithFallbackMetrics(example.Latex, metrics);
+                var actual = Assert.IsType<DisplayList>(viewModel.DisplayList);
+                Assert.Equal(expected.Width, actual.Width);
+                Assert.Equal(expected.Height, actual.Height);
+                Assert.Equal(expected.Depth, actual.Depth);
+                Assert.Empty(viewModel.EnvironmentError);
+                Assert.Null(formula.PreparationError);
+
+                viewModel.IsFontFallbackEnabled = false;
+                await WaitForParseAsync(viewModel);
+                Assert.NotNull(formula.PreparationError);
+                Assert.Equal(initial.Width, viewModel.DisplayList!.Width);
+                viewModel.IsFontFallbackEnabled = true;
+                await WaitForParseAsync(viewModel);
+                Assert.Null(formula.PreparationError);
+                Assert.Equal(expected.Width, viewModel.DisplayList!.Width);
+            }
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    [AvaloniaFact]
     public async Task ExamplePicker_AfterNativeAndRenderingFailures_RecoversWithTextExample()
     {
         var window = new MainWindow();
