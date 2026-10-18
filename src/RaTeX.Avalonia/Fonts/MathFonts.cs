@@ -11,7 +11,7 @@ namespace RaTeX.Avalonia;
 /// </summary>
 internal sealed class MathFonts : FontCollectionBase
 {
-    private static readonly ConditionalWeakTable<FontManager, MathFonts> _collections = new();
+    private static readonly ConditionalWeakTable<FontManager, MathFonts> Collections = new();
     private readonly Dictionary<string, GlyphTypeface> _faces = new(StringComparer.Ordinal);
 
     /// <summary>
@@ -36,7 +36,7 @@ internal sealed class MathFonts : FontCollectionBase
         get
         {
             Dispatcher.UIThread.VerifyAccess();
-            return _collections.GetValue(
+            return Collections.GetValue(
                 FontManager.Current,
                 manager =>
                 {
@@ -132,7 +132,7 @@ internal sealed class MathFonts : FontCollectionBase
     /// </summary>
     internal static uint CmapCodePoint(string font, uint cp)
     {
-        foreach (var (start, name) in _letterRanges)
+        foreach (var (start, name) in LetterRanges)
         {
             if (font == name && cp >= start && cp < start + 52)
             {
@@ -156,7 +156,7 @@ internal sealed class MathFonts : FontCollectionBase
             return 107;
         }
 
-        foreach (var (start, name) in _digitRanges)
+        foreach (var (start, name) in DigitRanges)
         {
             if (font == name && cp >= start && cp < start + 10)
             {
@@ -167,13 +167,13 @@ internal sealed class MathFonts : FontCollectionBase
         return cp;
     }
 
-    private static readonly (uint, string)[] _letterRanges =
+    private static readonly (uint, string)[] LetterRanges =
     [
         (0x1D400, "Main-Bold"), (0x1D434, "Math-Italic"), (0x1D468, "Math-BoldItalic"),
         (0x1D504, "Fraktur-Regular"), (0x1D56C, "Fraktur-Bold"), (0x1D5A0, "SansSerif-Regular"),
         (0x1D5D4, "SansSerif-Bold"), (0x1D608, "SansSerif-Italic"), (0x1D670, "Typewriter-Regular")
     ];
-    private static readonly (uint, string)[] _digitRanges =
+    private static readonly (uint, string)[] DigitRanges =
     [
         (0x1D7CE, "Main-Bold"), (0x1D7E2, "SansSerif-Regular"), (0x1D7EC, "SansSerif-Bold"), (0x1D7F6, "Typewriter-Regular")
     ];
