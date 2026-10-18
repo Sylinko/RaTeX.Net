@@ -1,9 +1,7 @@
-<p>
-  <a href="https://www.nuget.org/packages/RaTeX"><img src="https://img.shields.io/nuget/v/RaTeX.svg?style=flat-square" alt="NuGet"></a>
-  <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-8.0%20%7C%2010.0-512BD4.svg?style=flat-square" alt=".NET 8 and .NET 10"></a>
-  <a href="https://avaloniaui.net/"><img src="https://img.shields.io/badge/Avalonia-12-blue.svg?style=flat-square" alt="Avalonia 12"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License"></a>
-</p>
+[![NuGet](https://img.shields.io/nuget/v/RaTeX.svg?style=flat-square)](https://www.nuget.org/packages/RaTeX)
+[![.NET 8 and .NET 10](https://img.shields.io/badge/.NET-8.0%20%7C%2010.0-512BD4.svg?style=flat-square)](https://dotnet.microsoft.com/)
+[![Avalonia 12](https://img.shields.io/badge/Avalonia-12-blue.svg?style=flat-square)](https://avaloniaui.net/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
 # RaTeX / RaTeX.Avalonia
 
