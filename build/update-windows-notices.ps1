@@ -9,7 +9,7 @@ $nativeTarget = $config.targets.$RuntimeIdentifier.target
 $upstream = Join-Path $root "artifacts/upstream/RaTeX-$($config.commit)"
 $lockPath = Join-Path $PSScriptRoot 'Cargo.lock'
 $lockHash = (Get-FileHash $lockPath -Algorithm SHA256).Hash
-if (!(Test-Path "$upstream/Cargo.lock") -or (Get-FileHash "$upstream/Cargo.lock" -Algorithm SHA256).Hash -ne $lockHash) {
+if (!(Test-Path "$upstream/Cargo.lock") -or (Get-Content "$upstream/Cargo.lock" -Raw) -cne (Get-Content $lockPath -Raw)) {
     throw 'Run build/build-windows-native.ps1 or build/build-mac-native.sh first to prepare the pinned upstream and Cargo.lock.'
 }
 
@@ -89,7 +89,7 @@ The notices below do not change the licenses of the individual components.
 
 RaTeX and KaTeX fonts
 --------------------
-RaTeX: https://github.com/erweixin/RaTeX
+RaTeX: $($config.repoUrl)
 Pinned commit: $($config.commit)
 Copyright and full MIT license: licenses/RaTeX-MIT.txt
 

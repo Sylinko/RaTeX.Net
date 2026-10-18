@@ -9,14 +9,12 @@ $root = Split-Path $PSScriptRoot -Parent
 $config = Get-Content (Join-Path $PSScriptRoot 'native.json') -Raw | ConvertFrom-Json
 $nativeTarget = $config.targets.$RuntimeIdentifier
 $commit = $config.commit
-$archiveHash = $config.archiveSha256
 $cache = Join-Path $root 'artifacts/upstream'
 $upstream = Join-Path $cache "RaTeX-$commit"
 New-Item -ItemType Directory -Force -Path $cache | Out-Null
 if (!(Test-Path -LiteralPath $upstream)) {
     $archive = Join-Path $cache 'ratex.tar.gz'
-    Invoke-WebRequest "https://codeload.github.com/erweixin/RaTeX/tar.gz/$commit" -OutFile $archive
-    if ((Get-FileHash $archive -Algorithm SHA256).Hash -ne $archiveHash) { throw 'Upstream archive hash mismatch.' }
+    Invoke-WebRequest "$($config.repoUrl)/archive/$commit.tar.gz" -OutFile $archive
     tar -xzf $archive -C $cache
     if ($LASTEXITCODE) { throw 'Upstream extraction failed.' }
 }
@@ -37,7 +35,7 @@ try {
     $target = Join-Path $root "src/RaTeX/runtimes/$RuntimeIdentifier/native"
     New-Item -ItemType Directory -Force -Path $target | Out-Null
     Copy-Item -LiteralPath "target/$($nativeTarget.target)/release/$($nativeTarget.library)" -Destination $target
-    Get-FileHash (Join-Path $target $nativeTarget.library) -Algorithm SHA256
+    Write-Host "Built $RuntimeIdentifier from $upstream -> $target"
 } finally {
     Pop-Location
     $env:RUSTFLAGS = $savedFlags

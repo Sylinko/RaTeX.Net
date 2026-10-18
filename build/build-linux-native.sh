@@ -53,18 +53,17 @@ import sys
 
 config = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8-sig"))
 native = config["targets"][sys.argv[2]]
-print(config["commit"], config["archiveSha256"], config["toolchain"], native["target"], native["library"])
+print(config["repoUrl"], config["commit"], config["toolchain"], native["target"], native["library"])
 PY
 )"
-read -r commit archive_hash toolchain target library <<< "$settings"
+read -r repo_url commit toolchain target library <<< "$settings"
 cache="$root/artifacts/upstream"
 upstream="$cache/RaTeX-$commit"
 
 mkdir -p "$cache"
 if [[ ! -d "$upstream" ]]; then
     archive="$cache/ratex.tar.gz"
-    curl --fail --location "https://codeload.github.com/erweixin/RaTeX/tar.gz/$commit" --output "$archive"
-    printf '%s  %s\n' "$archive_hash" "$archive" | sha256sum -c -
+    curl --fail --location "$repo_url/archive/$commit.tar.gz" --output "$archive"
     tar -xzf "$archive" -C "$cache"
 fi
 

@@ -61,7 +61,7 @@ The notices below do not change the licenses of the individual components.
 
 RaTeX and KaTeX fonts
 --------------------
-RaTeX: https://github.com/erweixin/RaTeX
+RaTeX: {config['repoUrl']}
 Pinned commit: {config['commit']}
 Copyright and full MIT license: licenses/RaTeX-MIT.txt
 

@@ -10,8 +10,8 @@ The notices below do not change the licenses of the individual components.
 
 RaTeX and KaTeX fonts
 --------------------
-RaTeX: https://github.com/erweixin/RaTeX
-Pinned commit: 7d9f9a39218914bead8ffdf39b79028a01d12c22
+RaTeX: https://github.com/AuroraZiling/RaTeX
+Pinned commit: 303b57d55c43f6b08860a9762e6c3c76362448eb
 Copyright and full MIT license: licenses/RaTeX-MIT.txt
 
 Unmodified KaTeX fonts embedded in RaTeX.Avalonia:
