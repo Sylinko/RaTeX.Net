@@ -1,6 +1,6 @@
 {
-  "repoUrl": "https://github.com/AuroraZiling/RaTeX",
-  "commit": "303b57d55c43f6b08860a9762e6c3c76362448eb",
+  "repoUrl": "https://github.com/erweixin/RaTeX",
+  "commit": "28fa5a7c800172af00043270c0acc85bd0c60155",
   "toolchain": "1.98.1",
   "targets": {
     "win-x64": {
