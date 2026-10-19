@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/BuildNative/">
+    <File Path="build/build-linux-native.sh" />
+    <File Path="build/build-mac-native.sh" />
+    <File Path="build/build-windows-native.ps1" />
+    <File Path="build/native.json" />
+  </Folder>
   <Folder Name="/GitHub/">
     <File Path=".github/workflows/nuget-publish.yml" />
     <File Path=".gitignore" />
